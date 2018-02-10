@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>xtion2_ros</name>
+  <version>0.0.0</version>
+  <description>The xtion2_ros package</description>
+
+  <maintainer email="ryan@rwsinnet.com">Ryan Sinnet</maintainer>
+  <license>MIT</license>
+
+  <depend>boost</depend>
+  <depend>roscpp</depend>
+
+  <build_depend>roslint</build_depend>
+  <build_depend>cmake_modules</build_depend>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <export/>
+</package>

@@ -4,6 +4,7 @@
 #include <OpenNI.h>
 
 #include <ros/ros.h>
+#include <xtion2_ros/camera_publisher.h>
 #include <xtion2_ros/io_interface.h>
 
 int main(int argc, char** argv)
@@ -11,12 +12,14 @@ int main(int argc, char** argv)
   ros::init(argc, argv, "xtion2_ros_node");
   ros::start();
 
+  std::string camera_name;
+  ros::param::param("camera_name", camera_name, std::string("xtion2"));
+
   std::string device_uri;
   ros::param::param("device_uri", device_uri, std::string());
 
   double fps;
   ros::param::param("fps", fps, 30.);
-
 
   openni::Status rc = openni::STATUS_OK;
   openni::Device device;
@@ -72,6 +75,7 @@ int main(int argc, char** argv)
   }
 
   xtion2_ros::IOInterface iface(device, depth, color);
+  xtion2_ros::CameraPublisher publisher(camera_name);
   iface.initialize();
 
   ROS_INFO("Connected to Xtion2 with resolution %dx%d.", iface.getWidth(), iface.getHeight());
@@ -81,6 +85,7 @@ int main(int argc, char** argv)
   while (ros::ok())
   {
     iface.spinOnce();
+    publisher.publish(iface);
     r.sleep();
   }
 

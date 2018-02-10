@@ -1,8 +1,6 @@
 // Copyright 2018 Miso Robotics, Inc.
 // Author: Ryan W. Sinnet (ryan@rwsinnet.com)
 
-#include <opencv2/highgui.hpp>
-
 #include <xtion2_ros/io_interface.h>
 #include <ros/ros.h>
 
@@ -19,12 +17,6 @@ std::array<int, 2> IOInterface::initialize_stream(const openni::VideoStream& str
   return { { video_mode.getResolutionX(), video_mode.getResolutionY() } };
 }
 
-void IOInterface::initialize_texture_map()
-{
-  texture_map_x_ = MIN_CHUNKS_SIZE(width_, TEXTURE_SIZE);
-  texture_map_y_ = MIN_CHUNKS_SIZE(height_, TEXTURE_SIZE);
-  texture_map_ = std::vector<openni::RGB888Pixel>(texture_map_x_ * texture_map_y_);
-}
 
 bool IOInterface::initialize()
 {
@@ -56,16 +48,13 @@ bool IOInterface::initialize()
   streams_[0] = &depth_stream_;
   streams_[1] = &color_stream_;
 
-  initialize_texture_map();
-
   return true;
 }
 
-void IOInterface::convertColorFrame()
+const cv::Mat IOInterface::getFrame(openni::VideoFrameRef& frame, const int data_type)
 {
   // In a show of poor form, const_cast the data to avoid a memcpy. Hopefully no one tries to use them afterward.
-  cv::Mat mat(color_frame_.getHeight(), color_frame_.getWidth(), CV_8UC3, const_cast<void*>(color_frame_.getData()));
-  publisher_.publish(mat);
+  return cv::Mat(frame.getHeight(), frame.getWidth(), data_type, const_cast<void*>(frame.getData()));
 }
 
 void IOInterface::spinOnce()
@@ -78,14 +67,15 @@ void IOInterface::spinOnce()
     return;
   }
 
+  //! \todo Get both frames here for sure.
   switch (changedIndex)
   {
     case 0:
+      //! \todo Figure out how to use the timestamp from the frame.
       depth_stream_.readFrame(&depth_frame_);
       break;
     case 1:
       color_stream_.readFrame(&color_frame_);
-      convertColorFrame();
       break;
     default:
       ROS_ERROR("Failed waiting for next frame.");

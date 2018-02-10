@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <launch>
   <arg name="device_uri" default=""/>
-  <arg name="fps" default="240"/>
+  <arg name="fps" default="5"/>
   <arg name="output" default="screen"/>
 
   <node name="xtion2_ros_node" pkg="xtion2_ros" type="xtion2_ros_node" output="$(arg output)">

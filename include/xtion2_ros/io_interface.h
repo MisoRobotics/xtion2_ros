@@ -9,6 +9,8 @@
 
 #include <OpenNI.h>
 
+#include <xtion2_ros/camera_publisher.h>
+
 #define MIN_NUM_CHUNKS(data_size, chunk_size) ((((data_size)-1) / (chunk_size) + 1))
 #define MIN_CHUNKS_SIZE(data_size, chunk_size) (MIN_NUM_CHUNKS(data_size, chunk_size) * (chunk_size))
 
@@ -34,15 +36,28 @@ class IOInterface
   int width_;
   int height_;
 
+  CameraPublisher publisher_;
+
   static std::array<int, 2> initialize_stream(const openni::VideoStream& stream);
-  bool initialize_streams();
   void initialize_texture_map();
+
+  void convertColorFrame();
 
 public:
   IOInterface(openni::Device& device, openni::VideoStream& depth, openni::VideoStream& color);
 
   bool initialize();
-  void display();
+  void spinOnce();
+
+  inline int getWidth() const
+  {
+    return width_;
+  }
+
+  inline int getHeight() const
+  {
+    return height_;
+  }
 };
 }  // namespace xtion2_ros
 

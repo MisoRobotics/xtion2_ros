@@ -8,6 +8,8 @@
   <license>MIT</license>
 
   <depend>boost</depend>
+  <depend>cv_bridge</depend>
+  <depend>libopencv-dev</depend>
   <depend>roscpp</depend>
 
   <build_depend>roslint</build_depend>

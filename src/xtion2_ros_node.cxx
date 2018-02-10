@@ -1,3 +1,6 @@
+// Copyright 2018 Miso Robotics, Inc.
+// Author: Ryan W. Sinnet (ryan@rwsinnet.com)
+
 #include <OpenNI.h>
 
 #include <ros/ros.h>
@@ -5,20 +8,25 @@
 
 int main(int argc, char** argv)
 {
+  ros::init(argc, argv, "xtion2_ros_node");
+  ros::start();
+
+  std::string device_uri;
+  ros::param::param("device_uri", device_uri, std::string());
+
+  double fps;
+  ros::param::param("fps", fps, 30.);
+
+
   openni::Status rc = openni::STATUS_OK;
   openni::Device device;
   openni::VideoStream depth, color;
-  const char* device_uri = openni::ANY_DEVICE;
-  if (argc > 1)
-  {
-    device_uri = argv[1];
-  }
 
   rc = openni::OpenNI::initialize();
 
   ROS_WARN("After initialization:\n%s\n", openni::OpenNI::getExtendedError());
 
-  rc = device.open(device_uri);
+  rc = device.open(openni::ANY_DEVICE);
   if (rc != openni::STATUS_OK)
   {
     ROS_ERROR("SimpleViewer: Device open failed:\n%s\n", openni::OpenNI::getExtendedError());
@@ -66,10 +74,14 @@ int main(int argc, char** argv)
   xtion2_ros::IOInterface iface(device, depth, color);
   iface.initialize();
 
-  for (int i = 0; i < 5; ++i)
+  ROS_INFO("Connected to Xtion2 with resolution %dx%d.", iface.getWidth(), iface.getHeight());
+
+  auto i = 0;
+  ros::Rate r(fps);
+  while (ros::ok())
   {
-    ROS_INFO_STREAM("i: " << i);
-    iface.display();
+    iface.spinOnce();
+    r.sleep();
   }
 
   openni::OpenNI::shutdown();

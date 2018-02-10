@@ -32,7 +32,16 @@ void CameraPublisher::publish(IOInterface& xtion_interface)
     return;
 
   ++counter_;
-  publishImage(xtion_interface.getColorFrame(), sensor_msgs::image_encodings::RGB8, color_image_);
-  publishImage(xtion_interface.getDepthFrame(), sensor_msgs::image_encodings::TYPE_16UC1, depth_image_);
+
+  if (xtion_interface.color_new)
+  {
+    publishImage(xtion_interface.getColorFrame(), sensor_msgs::image_encodings::RGB8, color_image_);
+    xtion_interface.color_new = false;
+  }
+  if (xtion_interface.depth_new)
+  {
+    publishImage(xtion_interface.getDepthFrame(), sensor_msgs::image_encodings::TYPE_16UC1, depth_image_);
+    xtion_interface.depth_new = false;
+  }
 }
 }  // namespace xtion2_ros

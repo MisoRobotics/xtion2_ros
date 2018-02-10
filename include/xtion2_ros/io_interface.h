@@ -26,11 +26,14 @@ class IOInterface
   int width_;
   int height_;
 
-  static std::array<int, 2> initialize_stream(const openni::VideoStream& stream);
+  static std::array<int, 2> initialize_stream(openni::VideoStream& stream);
 
   const cv::Mat getFrame(openni::VideoFrameRef& frame, const int data_type);
 
 public:
+  bool color_new;
+  bool depth_new;
+
   IOInterface(openni::Device& device, openni::VideoStream& depth, openni::VideoStream& color);
 
   bool initialize();

@@ -7,33 +7,35 @@
 namespace xtion2_ros
 {
 IOInterface::IOInterface(openni::Device& device, openni::VideoStream& depth, openni::VideoStream& color)
-  : device_(device), depth_stream_(depth), color_stream_(color)
+  : device_(device), depth_stream_(depth), color_stream_(color), color_new(false), depth_new(false)
 {
 }
 
-std::array<int, 2> IOInterface::initialize_stream(const openni::VideoStream& stream)
+std::array<int, 2> IOInterface::initialize_stream(openni::VideoStream& stream)
 {
   auto video_mode = stream.getVideoMode();
   return { { video_mode.getResolutionX(), video_mode.getResolutionY() } };
 }
 
+static bool validateStream(openni::VideoStream& stream, const std::string& stream_name)
+{
+  if (!stream.isValid())
+  {
+    ROS_ERROR_STREAM(stream_name << " stream was invalid.");
+    return false;
+  }
+  return true;
+}
 
 bool IOInterface::initialize()
 {
   const auto depth_resolution = initialize_stream(depth_stream_);
-  if (!depth_stream_.isValid())
-  {
-    ROS_ERROR("Depth stream was invalid.");
+  if (!validateStream(depth_stream_, "Depth"))
     return false;
-  }
 
   const auto color_resolution = initialize_stream(color_stream_);
-  initialize_stream(color_stream_);
-  if (!color_stream_.isValid())
-  {
-    ROS_ERROR("Color stream was invalid.");
+  if (!validateStream(color_stream_, "Color"))
     return false;
-  }
 
   if (color_resolution != depth_resolution)
   {
@@ -73,9 +75,11 @@ void IOInterface::spinOnce()
     case 0:
       //! \todo Figure out how to use the timestamp from the frame.
       depth_stream_.readFrame(&depth_frame_);
+      depth_new = true;
       break;
     case 1:
       color_stream_.readFrame(&color_frame_);
+      color_new = true;
       break;
     default:
       ROS_ERROR("Failed waiting for next frame.");

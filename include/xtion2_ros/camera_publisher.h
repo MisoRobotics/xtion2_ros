@@ -4,6 +4,8 @@
 #ifndef XTION2_ROS_CAMERA_PUBLISHER_H
 #define XTION2_ROS_CAMERA_PUBLISHER_H
 
+#include <string>
+
 #include <cv_bridge/cv_bridge.h>
 #include <ros/ros.h>
 
@@ -29,7 +31,7 @@ class CameraPublisher
   cv_bridge::CvImage img_bridge_;
 
 public:
-  CameraPublisher(const std::string& camera_name);
+  explicit CameraPublisher(const std::string& camera_name);
 
   void publish(IOInterface& xtion_interface);
 };

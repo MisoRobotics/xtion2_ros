@@ -1,9 +1,13 @@
 <?xml version="1.0"?>
 <launch>
+  <arg name="camera_name" default="xtion2"/>
   <arg name="device_uri" default=""/>
   <arg name="output" default="screen"/>
 
   <node name="xtion2_ros_node" pkg="xtion2_ros" type="xtion2_ros_node" output="$(arg output)">
     <param name="device_uri" value="$(arg device_uri)"/>
   </node>
+
+  <node ns="$(arg camera_name)/rgb" name="image_proc" pkg="image_proc" type="image_proc"/>
+  <node ns="$(arg camera_name)/depth" name="image_proc" pkg="image_proc" type="image_proc"/>
 </launch>

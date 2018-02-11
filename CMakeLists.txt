@@ -7,8 +7,10 @@ add_compile_options(-std=c++14)
 
 find_package(catkin REQUIRED
   COMPONENTS
+  camera_info_manager
   cmake_modules
   cv_bridge
+  image_transport
   roscpp
   roslint
 )
@@ -21,7 +23,7 @@ find_package(OpenNI2 REQUIRED)
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES ${PROJECT_NAME}
-  CATKIN_DEPENDS cv_bridge roscpp
+  CATKIN_DEPENDS camera_info_manager cv_bridge image_transport roscpp
   DEPENDS Boost OpenCV OpenNI2
 )
 
